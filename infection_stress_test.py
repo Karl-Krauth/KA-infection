@@ -4,7 +4,7 @@ import infection_graph as ig
 
 # The mean class size on khan academy.
 # Model should be fine tunable with actual data.
-CLASS_SIZE_MEAN = 8.0
+CLASS_SIZE_MEAN = 0.5 
 
 class Density(object):
   # No coaching relationship.
@@ -23,8 +23,8 @@ class InfectionStressTest(object):
   def __init__(self, density, num_users):
     self._infection_graph = ig.InfectionGraph()
     self._num_users = num_users
-    self.add_nodes(num_users)
-    self.connect_nodes(density)
+    self._add_nodes(num_users)
+    self._connect_nodes(density)
 
   def _add_nodes(self, num_nodes):
     for i in xrange(0, num_nodes):
@@ -40,7 +40,10 @@ class InfectionStressTest(object):
     elif density == Density.realistic:
       for coach_id in xrange(0, self._num_users):
         # We assume class sizes are exponentially distributed.
-        class_size = int(random.expovariate(1.0 / CLASS_SIZE_MEAN) + 1)
+        if len(self._infection_graph.get_coaches(coach_id)) == 0:
+          class_size = int(random.expovariate(1.0 / CLASS_SIZE_MEAN))
+        else:
+          class_size = int(random.expovariate(1.0 / 0.001))
 
         # Add random users to be the current coach's students.
         for i in xrange(0, class_size):
@@ -69,4 +72,5 @@ class InfectionStressTest(object):
     start = time.time()
     foo(temp_graph, *args)
     end = time.time()
+    temp_graph.draw()
     return end - start
