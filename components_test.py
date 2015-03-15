@@ -13,6 +13,10 @@ def test_components():
   component_split_test()
   print "Split tests passed"
 
+  print "Running sizes tests"
+  component_sizes_test()
+  print "Sizes tests passed"
+
 # Tests adding nodes, merging components and getting component size  
 def component_base_test():
   comps = components.Components()
@@ -151,5 +155,75 @@ def component_split_test():
   assert comps.has_feature(3, 15)
   assert comps.has_feature(7, 12)
   assert comps.has_feature(7, 11)
+
+def component_sizes_test():
+  comps = components.Components()
+
+  assert len(comps.get_sorted_sizes()) == 0
+
+  comps.add_id(1)
+  comps.add_id(2)
+  comps.add_id(3)
+  comps.add_id(4)
+  comps.add_id(5)
+  comps.add_id(6)
+  comps.add_id(7)
+
+  sizes = comps.get_sorted_sizes()
+  assert len(sizes) == 7
+  assert sizes[0][0] == 1
+  assert sizes[1][0] == 1
+  assert sizes[6][0] == 1
+
+  comps.connect(1, 5)
+  sizes = comps.get_sorted_sizes()
+  assert len(sizes) == 6
+  assert sizes[0][0] == 1
+  assert sizes[5][0] == 2
+
+  comps.connect(2, 7)
+  comps.connect(5, 3)
+  sizes = comps.get_sorted_sizes()
+  assert len(sizes) == 4
+  assert sizes[0][0] == 1
+  assert sizes[3][0] == 3
+  assert sizes[2][0] == 2
+
+  comps.connect(7, 3)
+  sizes = comps.get_sorted_sizes()
+  assert len(sizes) == 3
+  assert sizes[0][0] == 1
+  assert sizes[2][0] == 5
+
+  comps.connect(4, 6)
+  comps.connect(6, 7)
+  sizes = comps.get_sorted_sizes()
+  assert len(sizes) == 1
+  assert sizes[0][0] == 7
+
+  comps.split_component([1, 2, 3, 4, 5, 6], [7])
+  sizes = comps.get_sorted_sizes()
+  assert len(sizes) == 2
+  assert sizes[0][0] == 1
+  assert sizes[0][1] == 7
+  assert sizes[1][0] == 6
+
+  comps.split_component([1, 3, 5], [2, 4, 6])
+  sizes = comps.get_sorted_sizes()
+  assert len(sizes) == 3
+  assert sizes[0][0] == 1
+  assert sizes[1][0] == 3
+  assert sizes[2][0] == 3
+
+  comps.split_component([1], [3, 5])
+  comps.split_component([3], [5])
+  comps.split_component([2], [4, 6])
+  comps.split_component([4], [6])
+  sizes = comps.get_sorted_sizes()
+  assert len(sizes) == 7
+  assert sizes[0][0] == 1
+  assert sizes[1][0] == 1
+  assert sizes[6][0] == 1
+  
 
 test_components()
