@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import sets
 import components
 import Queue
+import array
 
 class InfectionGraph(object):
   def __init__(self):
@@ -38,21 +39,80 @@ class InfectionGraph(object):
   def total_infection(self, user_id, feature_id):
     self._components.add_feature(user_id, feature_id)
 
-  def approx_limited_infection(self, approx_infections, feature_id):
-    pass
+  def approx_limited_infection(self, feature_id, approx_infections):
+    sizes = self._components.get_sorted_sizes()
+    num_infected = 0
+    infected = []
 
-  def exact_limited_infection(self, num_infections, feature_id):
-    pass
+    for i in reversed(xrange(len(sizes))):
+      if num_infected + sizes[i][0] == approx_infections:
+        infected.append(sizes[i][1])
+        num_infected += sizes[i][0]
+        break
+      elif num_infected + sizes[i][0] < approx_infections:
+        infected.append(sizes[i][1])
+        num_infected += sizes[i][0]
+
+    for user_id in infected:
+      self.total_infection(user_id, feature_id)
+    return num_infected
+
+  def exact_limited_infection(self, feature_id, num_infections):
+    if num_infections == 0:
+      return True
+
+    sizes = self._components.get_sorted_sizes()
+    if len(sizes) == 0:
+      return False
+
+    dp = [array.array('i', (-1,) * (num_infections + 1)) for i in xrange(len(sizes))]
+
+    if not self._rec_exact_infection(sizes, len(sizes) - 1, num_infections, dp):
+      return False
+
+    infected = []
+    subset_end = len(sizes) - 1
+    num_to_infect = num_infections
+    while num_to_infect != 0:
+      if sizes[subset_end][0] == num_to_infect:
+        infected.append(sizes[subset_end][1])
+        num_to_infect = 0
+      elif dp[subset_end - 1][num_to_infect]:
+        subset_end -= 1
+      else:
+        infected.append(sizes[subset_end][1])
+        num_to_infect -= sizes[subset_end][0]
+        subset_end -= 1
+   
+    for user_id in infected:
+      self.total_infection(user_id, feature_id)
+    return True  
+
+  def _rec_exact_infection(self, sizes, subset_end, num_infect, dp):
+    if dp[subset_end][num_infect] != -1:
+      return dp[subset_end][num_infect]
+
+    if subset_end == 0:
+      if sizes[0][0] == num_infect:
+        dp[subset_end][num_infect] = 1
+      else:
+        dp[subset_end][num_infect] = 0
+    else:
+      dp[subset_end][num_infect] = \
+          self._rec_exact_infection(sizes, subset_end - 1, num_infect, dp) or \
+          self._rec_exact_infection(sizes, subset_end - 1, num_infect - sizes[subset_end][0], dp) or \
+          (sizes[subset_end][0] == num_infect)
+    return dp[subset_end][num_infect]
 
   def has_feature(self, user_id, feature_id):
     return self._components.has_feature(user_id, feature_id)
 
-  def draw(self):
+  def draw(self, dest):
     plt.figure(1,figsize=(24,24))
     # layout graphs with positions using graphviz neato
     pos=nx.graphviz_layout(self._graph,prog="neato")
     nx.draw(self._graph, pos, node_size=5, with_labels=False)
-    plt.savefig("atlas.png",dpi=75)
+    plt.savefig(dest, dpi=75)
 
   def _get_connected(self, source, connected_node):
     visited = sets.Set()

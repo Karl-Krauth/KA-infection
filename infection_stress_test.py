@@ -68,9 +68,7 @@ class InfectionStressTest(object):
                                     num_infections, 0)
 
   def _benchmark_function(self, foo, *args):
-    temp_graph = self._infection_graph
     start = time.time()
-    foo(temp_graph, *args)
+    foo(self._infection_graph, *args)
     end = time.time()
-    temp_graph.draw()
     return end - start
