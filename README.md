@@ -1,5 +1,6 @@
 # KA-infection
-
+## This README will get significantly modified over the next 24 hours.
+## The code also still needs a bit of refactoring but feel free to have a look around!
 thoughts:
 * The infection problem is actually operating on an undirected graph (despite there being
 a directed graph between coaches and students) since students can transmit to coaches and vice-versa
