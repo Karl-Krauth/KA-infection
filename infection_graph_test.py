@@ -1,10 +1,21 @@
 import infection_graph as ig
 
 def test_infection_graph():
+  print "Running infection graph base tests."
   base_test()
-  exact_infection_test()
+  print "Infection graph base tests passed."
+  
+  print "Running total infection tests."
+  total_infection_test()
+  print "Total infection tests passed."
+  
+  print "Running approx infection tests."
   approx_infection_test()
+  print "Approx infection tests passed"
+  
+  print "Running exact infection tests."
   exact_infection_test()
+  print "Exact infection tests passed."
 
 def base_test():
   graph = ig.InfectionGraph()
@@ -47,7 +58,7 @@ def base_test():
   graph.remove_coaching_relation(1, 4)
   assert len(graph.get_coaches(4)) == 0
 
-def exact_infection_test():
+def total_infection_test():
   graph = ig.InfectionGraph()
   graph.add_user(0) 
   graph.add_user(1)
@@ -68,16 +79,16 @@ def exact_infection_test():
   graph.add_coaching_relation(5, 8)
   graph.add_coaching_relation(7, 8)
 
-  graph.exact_infection(6, 10)
+  graph.total_infection(6, 10)
   assert graph.has_feature(6, 10) 
   assert not graph.has_feature(0, 10)
   assert not graph.has_feature(8, 10)
 
-  graph.exact_infection(8, 11)
+  graph.total_infection(8, 11)
   assert graph.has_feature(8, 11)
   assert graph.has_feature(5, 11)
   
-  graph.exact_infection(5, 12)
+  graph.total_infection(5, 12)
   assert graph.has_feature(8, 12)
   assert graph.has_feature(7, 12)
 
@@ -86,8 +97,8 @@ def exact_infection_test():
   assert graph.has_feature(5, 12)
   assert graph.has_feature(7, 12)
 
-  graph.exact_infection(2, 13)
-  graph.exact_infection(0, 14)
+  graph.total_infection(2, 13)
+  graph.total_infection(0, 14)
   assert graph.has_feature(4, 13)
   assert graph.has_feature(3, 14)
   assert graph.has_feature(1, 14)
@@ -100,8 +111,8 @@ def exact_infection_test():
   assert graph.has_feature(4, 14)
   assert graph.has_feature(0, 14)
 
-  graph.exact_infection(0, 15)
-  graph.exact_infection(3, 16)
+  graph.total_infection(0, 15)
+  graph.total_infection(3, 16)
   assert not graph.has_feature(3, 15)
   assert not graph.has_feature(0, 16)
   assert not graph.has_feature(4, 15)
@@ -171,5 +182,3 @@ def exact_infection_test():
   graph.add_user(10)
   assert graph.exact_limited_infection(18, 8)
   assert graph.has_feature(10, 18) or graph.has_feature(9, 18)
-
-test_infection_graph()

@@ -224,6 +224,3 @@ def component_sizes_test():
   assert sizes[0][0] == 1
   assert sizes[1][0] == 1
   assert sizes[6][0] == 1
-  
-
-test_components()
