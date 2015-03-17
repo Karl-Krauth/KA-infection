@@ -3,10 +3,14 @@ This repository contains a module that has multiple methods to adjust what featu
 
 ## Running the tests
 Run the following commands to install all necessary dependencies:
-    pip install networkx
-    pip install sortedcontainers
+```
+pip install networkx
+pip install sortedcontainers
+```
 Now simply run
-    python run_tests.py
+```
+python run_tests.py
+```
 You can also import infection\_graph.py and use it as a standalone module.
 If you would like to also use the (unfinished) draw functionality you will need
 to install matplotlib and pygraphviz.
