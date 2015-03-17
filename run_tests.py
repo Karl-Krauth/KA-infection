@@ -7,6 +7,9 @@ import infection_graph_test
 components_test.test_components()
 infection_graph_test.test_infection_graph()
 
-# stress_test_1 = stress.InfectionStressTest(stress.Density.realistic, 1000000)
-# print stress_test_1.benchmark_total_infection()
-# print stress_test_1.benchmark_exact_limited_infection(100000)
+# num_nodes = 1000000
+# stress_test_1 = stress.InfectionStressTest(stress.Density.realistic, num_nodes)
+# print "total infection for", num_nodes, "nodes ran in", \
+#     stress_test_1.benchmark_total_infection(), "seconds"
+# print "exact infection for", num_nodes, "nodes ran in", \
+#     stress_test_1.benchmark_exact_limited_infection(10000), "seconds"

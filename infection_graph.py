@@ -61,14 +61,17 @@ class InfectionGraph(object):
     infected = []
 
     for i in reversed(xrange(len(sizes))):
+      # We have reached exactly the number of infections
       if num_infected + sizes[i][0] == approx_infections:
         infected.append(sizes[i][1])
         num_infected += sizes[i][0]
         break
+      # Adding the current component won't exceded our number of infections
       elif num_infected + sizes[i][0] < approx_infections:
         infected.append(sizes[i][1])
         num_infected += sizes[i][0]
 
+    # Infect all the components we added to our list.
     for user_id in infected:
       self.total_infection(user_id, feature_id)
     return num_infected
@@ -80,6 +83,7 @@ class InfectionGraph(object):
     infect them.
     '''
 
+    # We can always infect 0 users.
     if num_infections == 0:
       return True
 
@@ -87,6 +91,7 @@ class InfectionGraph(object):
     if len(sizes) == 0:
       return False
 
+    # Create a len(sizes) x num_infections memoization array.
     dp = [array.array('i', (-1,) * (num_infections + 1)) for i in xrange(len(sizes))]
 
     if not self._rec_exact_infection(sizes, len(sizes) - 1, num_infections, dp):
@@ -95,6 +100,8 @@ class InfectionGraph(object):
     infected = []
     subset_end = len(sizes) - 1
     num_to_infect = num_infections
+    # Trace through the dp array to build the list
+    # of components to infect.
     while num_to_infect != 0:
       if sizes[subset_end][0] == num_to_infect:
         infected.append(sizes[subset_end][1])
@@ -106,9 +113,11 @@ class InfectionGraph(object):
         num_to_infect -= sizes[subset_end][0]
         subset_end -= 1
    
+    # infect all the appropriate components.
     for user_id in infected:
       self.total_infection(user_id, feature_id)
     return True  
+
   def has_feature(self, user_id, feature_id):
     return self._components.has_feature(user_id, feature_id)
 
@@ -120,6 +129,11 @@ class InfectionGraph(object):
     plt.savefig(dest, dpi=75)
 
   def _rec_exact_infection(self, sizes, subset_end, num_infect, dp):
+    '''Check if it's possible to infect num_infect users given the component sizes.
+   
+    subset_end determines the largest component we can use in our sizes array
+    when infecting users.
+    '''
     if dp[subset_end][num_infect] != -1:
       return dp[subset_end][num_infect]
 

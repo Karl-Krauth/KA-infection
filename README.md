@@ -23,6 +23,7 @@ and delete relations. The graph is by nature directed.
 infections travel from students to coaches and vice versa components.py doesn't treat the infection graph
 as a directed graph. You can query components.py as to whether two users are indirectly connected, whether
 a particular user has a given feature, and get a sorted list of components by size.
+
 The Infection graph is implemented as a standard directed graph using the networkx library (which uses an
 implementation similar to an adjacency list).
 Components consists of an "inverted" tree where child nodes point to parent nodes. Each component is represented
@@ -56,25 +57,9 @@ We list the worst case time complexity of infection graph's methods. Most method
 * *remove_coaching_relation:* O(V)
 * *total_infection:* O(log(V))
 * *approx_limited_infection:* O(N)
-* *exact_limited_infection:* O(NC) 
+* *exact_limited_infection:* O(NC)
 
-## Possible improvements
-* I didn't have time to implement a good visualization of the infection spread.
-* Trade off here between fast infection and fast edge deletion
-* Seperating the actual graph of coaching relations from our data structure that determines connected components
-means that we can instantly update the deletion view from the user's perspective AND do the slow update on the connected
-components seperately if we parallelize. 
-* What are we meant to do if a new relation is formed after an infection?
-(Probably best to infect the whole new component too)
-* Probably won't have time to paralellize the algorithm but it should be easily parallelizable 
-in the future. Idea that might work:
-Maybe distribute the graph components across multiple machines have a way to lookup where each component
-currently lives (simple map from id to location would work). Then edge deletion resolution can happen on its own
-seperate machine. 
-* What happens if the graph gets updated while we are infecting a subset of users? We would potentially like for those users to be infected too.
-Some users might be exposed to two versions of the site temporarily but if we have a seperate graph of relations at least the relation instantly 
-updates.
-* The fact that I store the entire graph in memory is obviously not scalable. I don't particularly have time to set
-up persistent storage beyong simple flat files though.
-
-assumptions:
+## Stress tests
+On top of the provided unit tests we provide infection_stress_test.py which is a module that allows
+for testing the infection graph under various (semi-realistic, and unrealistic) conditions. 
+Example code has been provided in run_test.py but has been commented out to keep the runtime short.
